@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 public class GameDataManager : MonoBehaviour
 {
@@ -45,5 +46,22 @@ public class GameDataManager : MonoBehaviour
             currentData = new GameData();
             SaveGame();
         }
+    }
+    [ContextMenu("Reset Game Data")] 
+    public void ResetGame()
+    {
+        // Xóa file save nếu có
+        if (File.Exists(savePath))
+        {
+            File.Delete(savePath);
+            Debug.Log("🗑️ Old save file deleted.");
+        }
+
+        // Tạo dữ liệu mới
+        currentData = new GameData();
+        SaveGame();
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Debug.Log("✅ Game data reset complete!");
     }
 }

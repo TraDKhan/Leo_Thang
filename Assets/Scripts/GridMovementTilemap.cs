@@ -8,26 +8,42 @@ public class GridMovementTilemap : MonoBehaviour
     public float moveSpeed = 5f;
     public float gridSize = 1f;
 
-    [Header("References")]
-    public Tilemap groundTilemap; // Kéo Tilemap Ground vào đây trong Inspector
+    [Header("Auto-detect Tilemap")]
+    public Tilemap groundTilemap;
+
+    [Header("Checkpoint Prefab")]
+    public GameObject flagPrefab;
 
     private bool isMoving = false;
-    private Vector3 lastSafePos; // vị trí tile hợp lệ cuối cùng
+    private Vector3 lastSafePos;
+    private GameObject currentFlag;
 
     void Start()
     {
-        // Căn nhân vật chính giữa ô
+        if (groundTilemap == null)
+            groundTilemap = FindActiveGroundTilemap();
+
+        if (groundTilemap == null)
+        {
+            Debug.LogWarning("⚠️ Không tìm thấy Tilemap cho nhân vật!");
+            return;
+        }
+
         Vector3Int cell = groundTilemap.WorldToCell(transform.position);
         transform.position = groundTilemap.GetCellCenterWorld(cell);
         lastSafePos = transform.position;
+
+        // 🔹 Cắm cờ đầu tiên (Flag_Idle) với Y tăng thêm 0.1f
+        Vector2 flagPosition = new Vector3(lastSafePos.x, lastSafePos.y + 0.1f);
+        PlaceFlag(flagPosition, isStart: true);
+
     }
 
     void Update()
     {
-        if (isMoving) return;
+        if (isMoving || groundTilemap == null) return;
 
         Vector2 input = Vector2.zero;
-
         if (Input.GetKeyDown(KeyCode.UpArrow)) input = Vector2.up;
         else if (Input.GetKeyDown(KeyCode.DownArrow)) input = Vector2.down;
         else if (Input.GetKeyDown(KeyCode.LeftArrow)) input = Vector2.left;
@@ -37,7 +53,6 @@ public class GridMovementTilemap : MonoBehaviour
         {
             Vector3 nextPos = transform.position + new Vector3(input.x, input.y, 0) * gridSize;
 
-            // Nếu ô kế tiếp có tile => di chuyển bình thường
             if (HasTileAt(nextPos))
             {
                 lastSafePos = groundTilemap.GetCellCenterWorld(groundTilemap.WorldToCell(nextPos));
@@ -45,12 +60,22 @@ public class GridMovementTilemap : MonoBehaviour
             }
             else
             {
-                // Nếu không có tile => bước ra thêm 1 ô rồi thực hiện hiệu ứng rơi
                 Debug.Log("❌ Game Over: Ra khỏi Tilemap!");
-                Vector3 fallPos = transform.position + new Vector3(input.x, input.y, 0) * gridSize; // bước ra 1 ô
+                Vector3 fallPos = transform.position + new Vector3(input.x, input.y, 0) * gridSize;
                 StartCoroutine(FallOutOfMap(fallPos));
             }
         }
+    }
+
+    private Tilemap FindActiveGroundTilemap()
+    {
+        var allTilemaps = FindObjectsOfType<Tilemap>(true);
+        foreach (var map in allTilemaps)
+        {
+            if (map.gameObject.activeInHierarchy && map.gameObject.CompareTag("Ground"))
+                return map;
+        }
+        return null;
     }
 
     private bool HasTileAt(Vector3 worldPos)
@@ -77,32 +102,24 @@ public class GridMovementTilemap : MonoBehaviour
     {
         isMoving = true;
 
-        // Bước ra khỏi map
         while ((fallTarget - transform.position).sqrMagnitude > Mathf.Epsilon)
         {
             transform.position = Vector3.MoveTowards(transform.position, fallTarget, moveSpeed * Time.deltaTime);
             yield return null;
         }
 
-        // Trừ máu sau khi rơi
         PlayerHealth hp = GetComponent<PlayerHealth>();
         if (hp != null)
-        {
             hp.TakeDamage(1);
-        }
 
-        // Nếu còn sống -> thực hiện hiệu ứng hồi sinh
         if (hp == null || !hp.IsDead())
-        {
             yield return StartCoroutine(RespawnEffect());
-        }
 
         isMoving = false;
     }
 
     private IEnumerator RespawnEffect()
     {
-        // Thu nhỏ
         float shrinkTime = 0.3f;
         Vector3 startScale = transform.localScale;
         float t = 0f;
@@ -114,10 +131,14 @@ public class GridMovementTilemap : MonoBehaviour
             yield return null;
         }
 
-        // Hồi sinh lại vị trí an toàn
+        // 🔹 Hồi sinh tại vị trí an toàn
         transform.position = lastSafePos;
 
-        // Phóng to lại
+
+        // 🔹 Cắm flag mới (Flag_Out)
+        Vector2 flagPosition = new Vector3(lastSafePos.x, lastSafePos.y + 0.1f);
+        PlaceFlag(flagPosition, isStart: false);
+
         float growTime = 0.3f;
         t = 0f;
         while (t < growTime)
@@ -129,5 +150,37 @@ public class GridMovementTilemap : MonoBehaviour
 
         transform.localScale = startScale;
     }
+    // 🏳️ Spawn hoặc thay flag
+    private void PlaceFlag(Vector3 position, bool isStart)
+    {
+        if (flagPrefab == null)
+        {
+            Debug.LogWarning("⚠️ Chưa gán Prefab Flag!");
+            return;
+        }
 
+        if (currentFlag != null)
+            Destroy(currentFlag);
+
+        currentFlag = Instantiate(flagPrefab, position, Quaternion.identity);
+
+        CheckPoint cp = currentFlag.GetComponent<CheckPoint>();
+        if (cp != null)
+        {
+            if (isStart)
+                cp.PlayIdle();
+            else
+                cp.PlayOut();
+        }
+    }
+    public void RefreshTilemap()
+    {
+        groundTilemap = FindActiveGroundTilemap();
+        if (groundTilemap != null)
+        {
+            Vector3Int cell = groundTilemap.WorldToCell(transform.position);
+            transform.position = groundTilemap.GetCellCenterWorld(cell);
+            lastSafePos = transform.position;
+        }
+    }
 }

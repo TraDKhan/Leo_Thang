@@ -1,5 +1,6 @@
 ﻿public enum ItemType
 {
+    Point,
     Gold,
     Heart,
     SpeedBoost,

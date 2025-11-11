@@ -27,6 +27,10 @@ public class ItemPickup : MonoBehaviour
     {
         switch (itemData.itemType)
         {
+            case ItemType.Point:
+                CollectPoint(player); 
+                break;
+
             case ItemType.Gold:
                 CollectGold(player);
                 break;
@@ -42,10 +46,11 @@ public class ItemPickup : MonoBehaviour
                 // Mở rộng thêm tại đây
         }
     }
-
-    // ==================================================
-    // 🪙 GOLD
-    // ==================================================
+    public void CollectPoint(Collider2D player)
+    {
+        Debug.Log("+ " + itemData.value);
+        GameManager.Instance.setCurrentPoint(itemData.value);
+    }
     private void CollectGold(Collider2D player)
     {
         //if (GameDataManager.Instance != null)
@@ -56,10 +61,6 @@ public class ItemPickup : MonoBehaviour
 
         Debug.Log($"💰 Collected Gold +{itemData.value}");
     }
-
-    // ==================================================
-    // ❤️ HEART
-    // ==================================================
     private void CollectHeart(Collider2D player)
     {
         PlayerHealth health = player.GetComponent<PlayerHealth>();
@@ -69,18 +70,10 @@ public class ItemPickup : MonoBehaviour
             Debug.Log($"❤️ Healed +{itemData.value}");
         }
     }
-
-    // ==================================================
-    // ⚡ SPEED BOOST
-    // ==================================================
     private void CollectSpeedBoost(Collider2D player)
     {
         Debug.Log($"Speed boost");
     }
-
-    // ==================================================
-    // ✨ Hiệu ứng chung khi nhặt item
-    // ==================================================
     private void PlayPickupEffect()
     {
         // TODO: thêm particle, âm thanh hoặc animation tùy bạn

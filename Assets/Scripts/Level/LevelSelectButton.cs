@@ -4,25 +4,22 @@ using UnityEngine.SceneManagement;
 
 public class LevelSelectButton : MonoBehaviour
 {
-    public int levelIndex; // Số thứ tự level (0, 1, 2, ...)
-    public Image lockIcon; // Sprite hình khóa
-    public Button button;  // Nút button thực tế
+    public int levelIndex;
+    public Image lockIcon;
+    public Button button;
 
     private void Start()
     {
-        PlayerPrefs.SetInt("UnlockedLevel", 6);
-        PlayerPrefs.Save();
-        // Kiểm tra xem level này đã được mở khóa chưa
-        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 0);
+        if (GameDataManager.Instance?.currentData == null) return;
 
-        bool isUnlocked = levelIndex <= unlockedLevel;
+        var data = GameDataManager.Instance.currentData;
+        bool isUnlocked = data.unlockedLevels.Contains(levelIndex);
 
-        lockIcon.gameObject.SetActive(!isUnlocked); // Hiện khóa nếu chưa mở
-        button.interactable = isUnlocked;           // Tắt bấm nếu chưa mở
+        lockIcon.gameObject.SetActive(!isUnlocked);
+        button.interactable = isUnlocked;
+
         if (isUnlocked)
-        {
             button.onClick.AddListener(() => OnSelectLevel());
-        }
     }
 
     public void OnSelectLevel()

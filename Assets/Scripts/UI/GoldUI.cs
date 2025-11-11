@@ -29,7 +29,7 @@ public class GoldUI : MonoBehaviour
         if (gold != currentGold) // chỉ cập nhật khi thay đổi
         {
             currentGold = gold;
-            goldText.text = $"<sprite=0> {gold}";
+            goldText.text = $"{gold}";
         }
     }
 }

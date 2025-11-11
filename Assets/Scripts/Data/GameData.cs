@@ -4,14 +4,14 @@ using System.Collections.Generic;
 [Serializable]
 public class GameData
 {
-    public int totalGold; // Tổng số vàng người chơi có
-    public List<int> unlockedLevels; // Danh sách ID hoặc index của các màn đã mở khóa
-    public Dictionary<int, int> highScores; // Lưu điểm cao nhất theo từng màn (key = levelId)
+    public int totalGold;
+    public List<int> unlockedLevels;
+    public Dictionary<int, int> highScores;
 
     public GameData()
     {
         totalGold = 0;
-        unlockedLevels = new List<int> { 1 }; // Mặc định mở khóa màn 1
+        unlockedLevels = new List<int> { 0, 1, 2, 3 };
         highScores = new Dictionary<int, int>();
     }
 
