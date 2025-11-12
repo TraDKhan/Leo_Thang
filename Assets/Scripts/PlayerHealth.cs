@@ -47,6 +47,9 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("💀 Player is dead! GAME OVER!");
+
+        UIManager.Instance.onResultLevel("You Lost");
+        ButtonUIManager.Instance.UnLockLevelButton();
         onDeath?.Invoke();
     }
 

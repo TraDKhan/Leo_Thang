@@ -4,29 +4,43 @@ public class UIManager: MonoBehaviour
 {
     public static UIManager Instance;
 
-    [Header("Panels")]
-    public GameObject winPanel;
+    [Header("WIN")]
+    public GameObject resultPanel;
+    public TextMeshProUGUI levelResultText;
+    public TextMeshProUGUI levelTimeText;
+    public TextMeshProUGUI levelScoreText;
+    public TextMeshProUGUI levelBestScoreText;
 
     [Header("Level UI")]
     public TextMeshProUGUI levelSelected_Text;
     public TextMeshProUGUI levelSelected_HighScore;
 
+    private string highScore = "";
+
     private void Start()
     {
         if (Instance == null) Instance = this;
+        setActivePanel();
 
         int levelSelect = PlayerPrefs.GetInt("SelectedLevel") + 1;
         levelSelected_Text.text = $"LEVEL { levelSelect.ToString()}";
-        levelSelected_HighScore.text = GameDataManager.Instance.currentData.GetHighScore(PlayerPrefs.GetInt("SelectedLevel")).ToString();
 
-        setActivePanel();
+        ////
+        highScore = GameDataManager.Instance.currentData.GetHighScore(PlayerPrefs.GetInt("SelectedLevel")).ToString();
+        levelSelected_HighScore.text ="Best: " + highScore;
     }
     private void setActivePanel()
     {
-        winPanel.SetActive(false);
+        resultPanel.SetActive(false);
     }
-    public void onWinLevel()
+    public void onResultLevel(string result)
     {
-        winPanel.SetActive(true);
+        levelResultText.text = result;
+        levelTimeText.text ="Time: " + "00 : 00";
+        levelScoreText.text ="Score: " + GameManager.Instance.getCurrentPoint().ToString();
+        levelBestScoreText.text ="Best score: " + highScore;
+
+        ////
+        resultPanel.SetActive(true);
     }
 }

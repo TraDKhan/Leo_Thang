@@ -27,10 +27,11 @@ public class WinPoint : MonoBehaviour
 
             Debug.Log($"{indexLevel} + {currentPoint}");
 
-            UIManager.Instance.onWinLevel();
-            LevelManager.Instance.OnLevelComplete(indexLevel, 100);
+            UIManager.Instance.onResultLevel("You Win");
+            ButtonUIManager.Instance.UnLockLevelButton();
+            LevelManager.Instance.OnLevelComplete(indexLevel, currentPoint);
 
-            hasWon = true; // Đánh dấu đã thắng để không gọi lại
+            hasWon = true;
         }
     }
 

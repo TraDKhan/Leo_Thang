@@ -30,6 +30,7 @@ public class ButtonUIManager: MonoBehaviour
 
         ToggleButtons();
         onButtons();
+        UnLockLevelButton();
     }
 
     private void SetActivePanel() 
@@ -92,6 +93,20 @@ public class ButtonUIManager: MonoBehaviour
         }
     }
 
+    public void UnLockLevelButton()
+    {
+        int targetLevel = PlayerPrefs.GetInt("SelectedLevel") + 1;
+        Debug.Log(targetLevel);
+        if (GameDataManager.Instance.currentData.IsLevelUnlocked(targetLevel))
+        {
+            // Cho phép chuyển level
+            next.interactable = true;
+        }
+        else
+        {
+            next.interactable= false;
+        }
+    }
     private void onResume()
     {
         Time.timeScale = 1f;
