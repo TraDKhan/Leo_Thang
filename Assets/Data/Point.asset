@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Point
   m_EditorClassIdentifier: 
   itemType: 0
-  value: 100
+  value: 10
   icon: {fileID: 0}

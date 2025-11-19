@@ -48,6 +48,8 @@ public class LevelManager : MonoBehaviour
             PlayerPrefs.Save();
 
             // Load lại scene hiện tại để bật level mới
+            GameManager.Instance.setCurrentPoint(0);
+            UIManager.Instance.updateScoreUI();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
         else

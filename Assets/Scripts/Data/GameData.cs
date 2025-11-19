@@ -18,7 +18,7 @@ public class GameData
 
     public GameData()
     {
-        totalGold = 0;
+        totalGold = 111;
         unlockedLevels = new List<int> { 0, 1, 2, 3 };
 
         highScores = new Dictionary<int, int>

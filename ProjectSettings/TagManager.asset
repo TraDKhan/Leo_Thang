@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Item
+  - CameraBound
   layers:
   - Default
   - TransparentFX

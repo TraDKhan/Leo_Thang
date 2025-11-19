@@ -26,7 +26,7 @@ public class GoldUI : MonoBehaviour
 
         int gold = GameDataManager.Instance.currentData.totalGold;
 
-        if (gold != currentGold) // chỉ cập nhật khi thay đổi
+        if (gold != currentGold)
         {
             currentGold = gold;
             goldText.text = $"{gold}";

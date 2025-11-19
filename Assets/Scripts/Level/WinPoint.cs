@@ -9,14 +9,12 @@ public class WinPoint : MonoBehaviour
 
     void Update()
     {
-        if (hasWon) return; // Nếu đã thắng thì không kiểm tra nữa
+        if (hasWon) return;
 
         Vector2 origin = transform.position;
         Vector2 direction = Vector2.right;
 
         RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, collisionLayer);
-
-        Debug.DrawRay(origin, direction * rayLength, Color.red);
 
         if (hit.collider != null)
         {
@@ -27,6 +25,7 @@ public class WinPoint : MonoBehaviour
 
             Debug.Log($"{indexLevel} + {currentPoint}");
 
+            AudioManager.Instance.PlayCompleteLevel();
             UIManager.Instance.onResultLevel("You Win");
             ButtonUIManager.Instance.UnLockLevelButton();
             LevelManager.Instance.OnLevelComplete(indexLevel, currentPoint);
@@ -35,9 +34,18 @@ public class WinPoint : MonoBehaviour
         }
     }
 
-    // Nếu cần reset khi bắt đầu level mới, bạn có thể thêm hàm này:
     public void ResetWinState()
     {
         hasWon = false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Vector2 origin = transform.position;
+        Vector2 direction = Vector2.right;
+
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, rayLength, collisionLayer);
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(origin, direction * rayLength);
     }
 }

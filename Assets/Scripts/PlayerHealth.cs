@@ -13,6 +13,19 @@ public class PlayerHealth : MonoBehaviour
     public UnityEvent onHeal;
     public UnityEvent onDeath;
 
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -44,10 +57,11 @@ public class PlayerHealth : MonoBehaviour
         onHeal?.Invoke();
     }
 
-    private void Die()
+    public void Die()
     {
         Debug.Log("💀 Player is dead! GAME OVER!");
 
+        AudioManager.Instance.PlayGameLose();
         UIManager.Instance.onResultLevel("You Lost");
         ButtonUIManager.Instance.UnLockLevelButton();
         onDeath?.Invoke();
